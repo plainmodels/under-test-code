@@ -1,0 +1,505 @@
+{
+ "episode": "ep01",
+ "title": "My laptop has broken RAM. Linux uses it anyway.",
+ "voice": "af_heart",
+ "lang": "en-us",
+ "speed": 0.93,
+ "gap": 0.6,
+ "beats": [
+  {
+   "id": "b01",
+   "chapter": "",
+   "scene": "terminal",
+   "p": {
+    "label": "journalctl -k -b 0",
+    "source": "bootlog",
+    "count": 12,
+    "hl": "bad mem addr"
+   },
+   "text": "Every time my laptop starts, the Linux kernel prints these lines. Bad memory address, reserved. Bad memory address, reserved. On the most recent boot there were thirty of them.",
+   "visual": "terminal panel with the real lines, key text highlighted"
+  },
+  {
+   "id": "b02",
+   "chapter": "",
+   "scene": "statement",
+   "p": {
+    "lines": [
+     "Then it finishes booting.",
+     "And everything works."
+    ],
+    "sub": "This video was rendered on that laptop."
+   },
+   "text": "Then it finishes booting, and everything works. I write code on this machine. This video was rendered on it.",
+   "visual": "key sentence, line by line"
+  },
+  {
+   "id": "b03",
+   "chapter": "",
+   "scene": "title",
+   "p": {
+    "title": [
+     "My laptop has broken RAM.",
+     "Linux uses it anyway."
+    ],
+    "sub": "24 boots of kernel logs from one faulty machine"
+   },
+   "text": "My laptop has broken RAM. Linux uses it anyway.",
+   "visual": "title card",
+   "say": "My laptop has broken ram. Linux uses it anyway.",
+   "sfx": [
+    [
+     0.1,
+     "hit"
+    ]
+   ]
+  },
+  {
+   "id": "b04",
+   "chapter": "The question",
+   "scene": "statement",
+   "p": {
+    "lines": [
+     "An operating system doesn't need",
+     "perfect memory.",
+     "It needs an accurate map",
+     "of the damage."
+    ],
+    "accent": [
+     1,
+     2
+    ]
+   },
+   "text": "How does a computer run on memory it knows is faulty? The short answer is that an operating system doesn't need perfect memory. It needs an accurate map of where the damage is. The longer answer is in twenty-four boots of logs from this machine, and they show that the map I have been relying on is weaker than it looks.",
+   "visual": "key sentence, line by line"
+  },
+  {
+   "id": "b05",
+   "chapter": "The question",
+   "scene": "bullets",
+   "p": {
+    "head": "By the end you will be able to",
+    "items": [
+     "Read these kernel log lines",
+     "Explain what the kernel did with each one",
+     "Check your own machine for the same thing"
+    ]
+   },
+   "text": "By the end, you will be able to read these log lines, explain exactly what the kernel did with each one, and check your own machine for the same thing.",
+   "visual": "list revealed item by item"
+  },
+  {
+   "id": "b06",
+   "chapter": "1 · Memory is a map",
+   "scene": "memmap",
+   "p": {
+    "mode": "map"
+   },
+   "text": "Start with what memory looks like to the kernel. Physical memory is a long row of numbered bytes. The numbers are physical addresses. When the machine powers on, the firmware hands the kernel a table that says which address ranges are usable RAM, and which are reserved for devices. This is the real table from my laptop. Sixteen gigabytes of RAM, with a hole below the four gigabyte mark for hardware.",
+   "visual": "this laptop's physical address map drawn from its e820 table"
+  },
+  {
+   "id": "b07",
+   "chapter": "1 · Memory is a map",
+   "scene": "memmap",
+   "p": {
+    "mode": "pages"
+   },
+   "text": "The kernel cuts the usable ranges into page frames of four thousand and ninety-six bytes each. Four K pages, for short. Sixteen gigabytes is about four million of them. Every allocation a program ever makes is, underneath, built from these frames.",
+   "visual": "this laptop's physical address map drawn from its e820 table"
+  },
+  {
+   "id": "b08",
+   "chapter": "2 · What a fault looks like",
+   "scene": "word",
+   "p": {
+    "pattern": "2222222222222222",
+    "flip": 29
+   },
+   "text": "Now the fault. A memory cell stores one bit. A faulty cell sometimes gives back a different bit from the one you stored. Here is a sixty-four bit word. Write a pattern in, read it back, and one position comes back wrong.",
+   "visual": "a 64-bit word written and read back, one bit wrong",
+   "sfx": [
+    [
+     0.82,
+     "tick"
+    ]
+   ]
+  },
+  {
+   "id": "b09",
+   "chapter": "2 · What a fault looks like",
+   "scene": "bitflip",
+   "p": {
+    "before": "PAY 100",
+    "index": 4,
+    "bit": 3
+   },
+   "text": "One wrong bit sounds small. Here are seven characters of text, stored as bytes. Flip a single bit in one of them, and pay one hundred becomes pay nine hundred. Flip one bit in a memory address, and a program reads from the wrong place entirely. Nothing crashes at the moment of the flip. The damage shows up later, somewhere else.",
+   "say": "One wrong bit sounds small. Here are seven characters of text, stored as bytes. Flip a single bit in one of them, and, pay one hundred, becomes, pay nine hundred. Flip one bit in a memory address, and a program reads from the wrong place entirely. Nothing crashes at the moment of the flip. The damage shows up later, somewhere else.",
+   "visual": "text bytes with one bit flipped; a pointer landing in the wrong place",
+   "sfx": [
+    [
+     0.3,
+     "tick"
+    ]
+   ]
+  },
+  {
+   "id": "b10",
+   "chapter": "3 · How the kernel finds it",
+   "scene": "terminal",
+   "p": {
+    "label": "cat /proc/cmdline",
+    "lines": [
+     "BOOT_IMAGE=/boot/vmlinuz-7.0.0-43-generic",
+     "root=UUID=…  ro  quiet  splash  memtest=8"
+    ],
+    "hl": "memtest=8",
+    "big": true
+   },
+   "text": "So how does the kernel find the bad cells? On my laptop, the boot command line ends with this option: memtest=8. It tells the kernel to test memory itself, very early in boot, before that memory is handed out to anything.",
+   "say": "So how does the kernel find the bad cells? On my laptop, the boot command line ends with this option: mem test equals eight. It tells the kernel to test memory itself, very early in boot, before that memory is handed out to anything.",
+   "visual": "terminal panel with the real lines, key text highlighted"
+  },
+  {
+   "id": "b11",
+   "chapter": "3 · How the kernel finds it",
+   "scene": "patterns",
+   "p": {
+    "patterns": [
+     "8888888888888888",
+     "4444444444444444",
+     "2222222222222222",
+     "1111111111111111",
+     "aaaaaaaaaaaaaaaa",
+     "5555555555555555",
+     "ffffffffffffffff",
+     "0000000000000000"
+    ]
+   },
+   "text": "The test is simple, and you can read it in one short file of the kernel source. For each pass, pick a pattern. Write it into every free sixty-four bit word of RAM. Then read every word back and compare. Eight passes means eight patterns. Four of them put a single one bit in each position of every group of four bits. Then alternating bits, both ways. Then every bit set. And finally every bit clear, which leaves the memory zeroed.",
+   "visual": "the eight test patterns sweeping a memory grid, write then read"
+  },
+  {
+   "id": "b12",
+   "chapter": "3 · How the kernel finds it",
+   "scene": "code",
+   "p": {
+    "label": "mm/memtest.c  ·  Linux kernel, GPL-2.0",
+    "lines": [
+     "static void __init reserve_bad_mem(u64 pattern,",
+     "        phys_addr_t start_bad, phys_addr_t end_bad)",
+     "{",
+     "    pr_info(\"  %016llx bad mem addr %pa - %pa reserved\\n\",",
+     "            cpu_to_be64(pattern), &start_bad, &end_bad);",
+     "    memblock_reserve(start_bad, end_bad - start_bad);",
+     "    early_memtest_bad_size += (end_bad - start_bad);",
+     "}"
+    ],
+    "focus": [
+     [
+      3,
+      4
+     ],
+     [
+      5,
+      5
+     ]
+    ]
+   },
+   "text": "When a word reads back wrong, the kernel does two things. It prints the line you saw at the start, with the pattern and the address range. And it calls memblock_reserve on that range, which marks those bytes as taken, so the memory allocator will never see them.",
+   "say": "When a word reads back wrong, the kernel does two things. It prints the line you saw at the start, with the pattern and the address range. And it calls mem block reserve on that range, which marks those bytes as taken, so the memory allocator will never see them.",
+   "visual": "kernel source excerpt with the two actions highlighted"
+  },
+  {
+   "id": "b12a",
+   "chapter": "3 · How the kernel finds it",
+   "scene": "logline",
+   "p": {
+    "line": "2222222222222222 bad mem addr 0x00000001f4bb87f8 - 0x00000001f4bb8800 reserved"
+   },
+   "text": "Now we can read a line from the log properly. Left to right: the pattern that was being tested, the address of the first bad byte, and the address just past the last one. Subtract them and you get eight. Eight bytes. One sixty-four bit word that did not read back what was written.",
+   "visual": "one log line labelled field by field"
+  },
+  {
+   "id": "b13",
+   "chapter": "3 · How the kernel finds it",
+   "scene": "easteregg",
+   "p": {
+    "hex": "7a6c7258554e494c",
+    "ascii": "LINUXrlz"
+   },
+   "text": "A small detail I enjoyed. The full list has seventeen patterns, and the last one, read as text in the byte order this processor uses, spells LINUXrlz. Linux rules.",
+   "say": "A small detail I enjoyed. The full list has seventeen patterns, and the last one, read as text in the byte order this processor uses, spells, Linux R L Z. Linux rules.",
+   "visual": "pattern 17 reordered into memory order and read as text",
+   "sfx": [
+    [
+     0.42,
+     "whoosh"
+    ]
+   ]
+  },
+  {
+   "id": "b14",
+   "chapter": "4 · The fence is one page wide",
+   "scene": "pagefence",
+   "p": {},
+   "text": "Each bad range in my log is eight bytes. One word. But the kernel does not hand out memory in words. It hands out whole page frames. When boot finishes and free memory is released to the allocator, only complete pages are released. A page with even one reserved word inside it is never released. So each bad word fences off the entire four K page around it.",
+   "visual": "three page frames; the one with a reserved word is withheld"
+  },
+  {
+   "id": "b15",
+   "chapter": "4 · The fence is one page wide",
+   "scene": "scale",
+   "p": {},
+   "text": "That is cheap. All of my faulty cells sit inside four neighbouring pages. Sixteen K, out of sixteen gigabytes. One part in a million.",
+   "visual": "16 KiB marked on a 16 GiB bar",
+   "sfx": [
+    [
+     0.62,
+     "hit"
+    ]
+   ]
+  },
+  {
+   "id": "b16",
+   "chapter": "5 · Twenty-four boots",
+   "scene": "barchart",
+   "p": {
+    "hi": [
+     18,
+     21
+    ]
+   },
+   "text": "Here is what I did not expect. I pulled the kernel log for every boot still in the system journal. Twenty-four boots with the test enabled, over two weeks. If the memory were simply dead in fixed places, the list would be the same every time. It isn't. One boot found a hundred and ten bad words. Another found four.",
+   "visual": "bad words found on each of 24 boots",
+   "sfx": [
+    [
+     0.74,
+     "tick"
+    ],
+    [
+     0.86,
+     "tick"
+    ]
+   ]
+  },
+  {
+   "id": "b17",
+   "chapter": "5 · Twenty-four boots",
+   "scene": "pagegrid",
+   "p": {
+    "mode": "boots"
+   },
+   "text": "Here are the four pages, drawn word by word. Each boot lights up a different set. Across all twenty-four boots, three hundred and nineteen different words failed at least once. Not one of them failed every time. Eighty failed exactly once.",
+   "visual": "the four faulty pages drawn word by word from the boot logs"
+  },
+  {
+   "id": "b18",
+   "chapter": "5 · Twenty-four boots",
+   "scene": "patternstats",
+   "p": {},
+   "text": "And about four out of five detections came on a single pass, the pattern of twos. That tells me these cells are not dead. They are marginal. They hold some values and lose others, and whether they fail on a given morning depends on things the log does not record. The log does not even say which bit came back wrong.",
+   "visual": "detections per test pattern"
+  },
+  {
+   "id": "b18a",
+   "chapter": "5 · Twenty-four boots",
+   "scene": "bullets",
+   "p": {
+    "head": "Two limits, from the source code",
+    "items": [
+     "A reserved word is skipped by later passes",
+     "Only memory that is free at that moment is tested"
+    ],
+    "numbered": true,
+    "note": "mm/memtest.c · do_one_pass() walks for_each_free_mem_range()"
+   },
+   "text": "Two caveats about that data, both from reading the source. First, once a word is reserved, later passes skip it, so each word is counted against the first pattern it fails. Second, the test only covers memory that is free at that early moment. Memory the kernel is already using is never tested at all.",
+   "visual": "list revealed item by item"
+  },
+  {
+   "id": "b19",
+   "chapter": "6 · The catch",
+   "scene": "statement",
+   "p": {
+    "lines": [
+     "The fence is not stored anywhere.",
+     "It is rebuilt on every boot,",
+     "from one test."
+    ],
+    "accent": [
+     0
+    ]
+   },
+   "text": "This is where the map gets weak. The fence is not stored anywhere. It is rebuilt from nothing on every boot, from one test that writes each word eight times. It only protects a page if the test happens to catch at least one bad word in that page, on that boot.",
+   "visual": "key sentence, line by line"
+  },
+  {
+   "id": "b20",
+   "chapter": "6 · The catch",
+   "scene": "pagegrid",
+   "p": {
+    "mode": "miss",
+    "boot": 21
+   },
+   "text": "On twenty-three of the twenty-four boots, it did. On the thirteenth of November, it didn't. That boot found four bad words, in three of the pages. The fourth page, which holds seventy-six words that have failed on other days, passed the test. The kernel released it as good memory.",
+   "visual": "the four faulty pages drawn word by word from the boot logs",
+   "sfx": [
+    [
+     0.48,
+     "hit"
+    ]
+   ]
+  },
+  {
+   "id": "b21",
+   "chapter": "6 · The catch",
+   "scene": "statement",
+   "p": {
+    "lines": [
+     "Was anything corrupted that day?",
+     "I don't know.",
+     "Nothing would have told me."
+    ],
+    "accent": [
+     1
+    ],
+    "sub": "Intel Core i5-1235U · ECC memory supported: No"
+   },
+   "text": "I do not know whether anything was corrupted during that session. That is exactly the problem with memory errors. Without error-correcting memory, which this laptop's processor does not support, nothing tells you.",
+   "visual": "key sentence, line by line"
+  },
+  {
+   "id": "b22",
+   "chapter": "6 · The catch",
+   "scene": "statement",
+   "p": {
+    "lines": [
+     "A test is a sample.",
+     "Passing means the fault",
+     "didn't show up this time."
+    ],
+    "accent": [
+     0
+    ],
+    "sub": "Observed here: 1 miss in 24 boots"
+   },
+   "text": "A test is a sample. Passing it means the fault did not show up this time. For a fault that comes and goes, a fresh test on every boot is a bet. And my logs show it losing one time in twenty-four.",
+   "visual": "key sentence, line by line"
+  },
+  {
+   "id": "b22a",
+   "chapter": "6 · The catch",
+   "scene": "cost",
+   "p": {
+    "off": 1.2,
+    "on": 38.2,
+    "n_off": 26,
+    "n_on": 24
+   },
+   "text": "And the bet is not free. On the twenty-six boots in my journal from before I enabled the test, the kernel took about one point two seconds to start. On the twenty-four boots with the test, about thirty-eight. That is thirty-seven extra seconds on every boot, for a fence that is rebuilt each time, and sometimes incomplete.",
+   "visual": "kernel start time with and without the test",
+   "sfx": [
+    [
+     0.66,
+     "hit"
+    ]
+   ]
+  },
+  {
+   "id": "b23",
+   "chapter": "7 · A better fence",
+   "scene": "terminal",
+   "p": {
+    "label": "kernel command line",
+    "lines": [
+     "memtest=8   memmap=16K$0x1f4bb8000"
+    ],
+    "hl": "memmap=16K\\$0x1f4bb8000",
+    "big": true,
+    "note": [
+     "Documentation/admin-guide/kernel-parameters.txt  ·  memmap=nn[KMG]$ss[KMG]  \"Mark specific memory as reserved.\"",
+     "In GRUB the $ needs an escape character, or it and the number after it are eaten."
+    ]
+   },
+   "text": "The stronger fix is to stop asking the question every morning. The kernel has another option, memmap, that marks an address range as reserved, unconditionally. I know the range now, because I have two weeks of evidence. Sixteen K, starting at this address. With that on the command line, those four pages are never handed out, whatever the test finds.",
+   "say": "The stronger fix is to stop asking the question every morning. The kernel has another option, mem map, that marks an address range as reserved, unconditionally. I know the range now, because I have two weeks of evidence. Sixteen K, starting at this address. With that on the command line, those four pages are never handed out, whatever the test finds.",
+   "visual": "terminal panel with the real lines, key text highlighted"
+  },
+  {
+   "id": "b24",
+   "chapter": "7 · A better fence",
+   "scene": "compare",
+   "p": {
+    "left": {
+     "head": "Test on every boot",
+     "items": [
+      "Finds what fails today",
+      "Missed a page 1 time in 24",
+      "Adds about 37 seconds to boot"
+     ]
+    },
+    "right": {
+     "head": "Fixed reservation",
+     "items": [
+      "Uses two weeks of evidence",
+      "Same four pages, every boot",
+      "No time added to boot"
+     ]
+    }
+   },
+   "text": "I would still run the test from time to time, as an alarm. If it ever reports a bad word outside the fence, the damage is spreading. And the real repair, of course, is a new memory module. Fencing is what you do until then.",
+   "visual": "two approaches side by side"
+  },
+  {
+   "id": "b25",
+   "chapter": "What to remember",
+   "scene": "bullets",
+   "p": {
+    "head": "Three things",
+    "items": [
+     "Memory is a map. Holes are fine if the map is right.",
+     "The fence is one page wide.",
+     "A memory test shows what failed today, not what is faulty."
+    ],
+    "numbered": true
+   },
+   "text": "So, three things to take away. One. To the kernel, memory is a map, and holes in the map are fine, as long as the map is right. Two. The fence is one page wide, because the page is the unit the kernel deals in. Three. A memory test tells you what failed today, not what is faulty.",
+   "visual": "list revealed item by item"
+  },
+  {
+   "id": "b26",
+   "chapter": "Check your own machine",
+   "scene": "terminal",
+   "p": {
+    "label": "on any Linux machine",
+    "lines": [
+     "$ journalctl -k | grep 'bad mem'",
+     "$ grep EarlyMemtestBad /proc/meminfo",
+     "EarlyMemtestBad:       1 kB"
+    ],
+    "hl": "bad mem|EarlyMemtestBad",
+    "big": true
+   },
+   "text": "If you want to check your own Linux machine, search the kernel log for the words bad mem, or look for EarlyMemtestBad in /proc/meminfo. The data, the analysis script, and the code that drew every animation in this video are linked below.",
+   "say": "If you want to check your own Linux machine, search the kernel log for the words, bad mem, or look for early mem test bad, in proc mem info. The data, the analysis script, and the code that drew every animation in this video are linked below.",
+   "visual": "terminal panel with the real lines, key text highlighted"
+  },
+  {
+   "id": "b27",
+   "chapter": "",
+   "scene": "endcard",
+   "p": {
+    "next_label": "Next on Under Test",
+    "next": [
+     "Why a network call on one machine",
+     "takes exactly 40 milliseconds"
+    ]
+   },
+   "text": "Thanks for watching. This is Under Test: real systems, measured. Next time: why a network call between two programs on the same machine takes exactly forty milliseconds.",
+   "visual": "end card with space for YouTube end-screen elements"
+  }
+ ],
+ "tail": 11
+}

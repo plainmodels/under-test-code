@@ -1,0 +1,37 @@
+id,beat,claim,evidence,source,status
+1,b01,"The kernel prints 'bad mem addr ... reserved' lines at boot; the most recent boot had 30",Kernel journal of boot 0 (2026-11-14 17:12),experiments/ep01-bad-ram/kernel_boot_excerpt.txt (grep -c 'bad mem' = 30),OBSERVED
+2,b02,"This video was rendered on the same laptop",Render run by pipeline/render.py on this machine,pilot/build/render.log; logs/timelog.csv,OBSERVED
+3,b04,"There are 24 boots of logs with the test enabled",Journal holds 50 boots; 24 have 'early_memtest: # of tests: 8',experiments/ep01-bad-ram/all_boots.json; analyse.py,OBSERVED
+4,b06,"Firmware hands the kernel a table of usable and reserved address ranges",BIOS-e820 lines in the kernel log of this machine,experiments/ep01-bad-ram/kernel_boot_excerpt.txt,OBSERVED
+5,b06,"The laptop has 16 gigabytes of RAM with a hole below 4 GB for hardware","MemTotal 16,067,888 kB; e820 shows RAM to 0x73afffff, device ranges to 0xffffffff, RAM again from 0x100000000",/proc/meminfo; kernel_boot_excerpt.txt,OBSERVED
+6,b07,"Page frames are 4 KiB; about four million of them","MemTotal 16,067,888 kB / 4 = 4,016,972 pages; x86-64 base page size 4 KiB",/proc/meminfo; getconf PAGESIZE = 4096,OBSERVED
+7,b09,"Flipping one bit turns 'PAY 100' into 'PAY 900'","ASCII '1' = 0x31; flipping bit 3 gives 0x39 = '9'",experiments/ep01-bad-ram/bitflip.py output,OBSERVED
+8,b09,"Flipping one bit of a pointer makes it point elsewhere (0x...4e10 becomes 0x...4e30)","0x10 XOR 0x20 = 0x30; the address shown is illustrative, not captured from a process",experiments/ep01-bad-ram/bitflip.py,OBSERVED (illustrative value)
+9,b10,"The boot command line ends with memtest=8",/proc/cmdline on this machine,experiments/ep01-bad-ram/kernel_boot_excerpt.txt,OBSERVED
+10,b10,"memtest= makes the kernel test memory early in boot and reserve bad regions","'Memtest fills the memory with this pattern, validates memory contents and reserves bad memory regions that are detected.'",https://raw.githubusercontent.com/torvalds/linux/master/Documentation/admin-guide/kernel-parameters.txt,VERIFIED
+11,b11,"The test writes a pattern to every free 64-bit word, reads it back and compares",memtest() loops over u64 words with WRITE_ONCE then READ_ONCE; do_one_pass() uses for_each_free_mem_range,https://raw.githubusercontent.com/torvalds/linux/master/mm/memtest.c,VERIFIED
+12,b11,"With memtest=8 the eight patterns are 0x88.., 0x44.., 0x22.., 0x11.., 0xaa.., 0x55.., 0xff.., 0x00.. in that order","early_memtest() runs i = 7 down to 0 over patterns[] = {0, ff.., 55.., aa.., 11.., 22.., 44.., 88.., ...}",mm/memtest.c (same URL),VERIFIED
+13,b11,"The final all-zero pass leaves memory zeroed","Source comment: 'The first entry has to be 0 to leave memtest with zeroed memory'",mm/memtest.c,VERIFIED
+14,b12,"On a mismatch the kernel prints the line and calls memblock_reserve on the range","reserve_bad_mem(): pr_info(...) then memblock_reserve(start_bad, end_bad - start_bad)",mm/memtest.c,VERIFIED
+15,b12a,"A log line gives the pattern, the first bad byte and one past the last; the example range is 8 bytes","0x1f4bb8800 - 0x1f4bb87f8 = 8; reserve_bad_mem is called with last_bad + incr where incr = sizeof(u64)",kernel_boot_excerpt.txt; mm/memtest.c,VERIFIED + OBSERVED
+16,b13,"There are 17 patterns and the last reads 'LINUXrlz' in little-endian byte order","patterns[] has 17 entries; struct.pack('<Q', 0x7a6c7258554e494c) = b'LINUXrlz'",mm/memtest.c; experiments/ep01-bad-ram/bitflip.py,VERIFIED + OBSERVED
+17,b14,"Only complete pages are released to the allocator; a page containing a reserved word is never released","__free_memory_core(): start_pfn = PFN_UP(start); end_pfn = PFN_DOWN(end); pages freed only for start_pfn < end_pfn",https://raw.githubusercontent.com/torvalds/linux/master/mm/memblock.c,VERIFIED
+18,b15,"All faulty cells sit in four neighbouring pages: 16 KiB of 16 GiB, one part in a million","All 319 bad words lie in 0x1f4bb8000-0x1f4bbbfff; 16 KiB / 16 GiB = 1/1,048,576",experiments/ep01-bad-ram/summary.json,OBSERVED
+19,b16,"One boot found 110 bad words; another found 4","Boot of 2026-11-11 15:47 = 110; boot of 2026-11-13 09:36 = 4",summary.json,OBSERVED
+20,b16,"The boots span two weeks","First tested boot 2026-11-01, last 2026-11-14",all_boots.json,OBSERVED
+21,b17,"319 different words failed at least once; none failed every time; 80 failed exactly once",Counts across the 24 tested boots,summary.json (analyse.py),OBSERVED
+22,b18,"About four in five detections came on the pattern of twos","776 of 952 logged ranges = 81.5%",all_boots.json (pattern tally),OBSERVED
+23,b18,"The log does not say which bit was wrong",pr_info prints only pattern and address range,mm/memtest.c,VERIFIED
+24,b18,"That the cells are 'marginal' and not dead",Inference from intermittency: no word failed on all boots. The physical cause was not measured,summary.json,JUDGEMENT (stated as inference in narration)
+25,b18a,"A reserved word is skipped by later passes","do_one_pass() iterates for_each_free_mem_range; a reserved range is no longer free",mm/memtest.c,VERIFIED
+26,b18a,"Only memory free at that moment is tested; memory the kernel already uses is not",Same loop over free memblock ranges,mm/memtest.c,VERIFIED
+27,b19,"The fence is rebuilt on every boot; each word is written eight times with memtest=8",Reservation happens in early boot from that boot's test; one write per pattern per pass,mm/memtest.c,VERIFIED
+28,b20,"On 23 of 24 boots every one of the four pages had at least one detected word",Per-boot per-page counts,summary.json (boots[].per_page),OBSERVED
+29,b20,"On 13 November one boot found 4 words in three pages; page 0x1f4bba000 had none and was released","Boot 2026-11-13 09:36: per-page counts [2,1,0,1]; release follows from claim 17",summary.json; mm/memblock.c,OBSERVED + VERIFIED mechanism
+30,b20,"That page holds 76 words that failed on other boots",Distinct bad words in page 0x1f4bba000 across all boots = 76,summary.json,OBSERVED
+31,b21,"The laptop's processor does not support error-correcting memory","Intel specification page for Core i5-1235U: 'ECC Memory Supported: No'",https://www.intel.com/content/www/us/en/products/sku/226261/intel-core-i51235u-processor-12m-cache-up-to-4-40-ghz/specifications.html,VERIFIED
+32,b21,"Whether anything was corrupted that session is unknown",No evidence either way; stated as unknown in narration,—,UNKNOWN (stated as such)
+33,b22a,"Kernel start took about 1.2 s on 26 boots without the test and about 38 s on 24 boots with it","systemd 'Startup finished' kernel times: medians 1.2 s (n=26) and 38.2 s (n=24). The earlier boots also ran an older kernel build (7.0.0-38), so the comparison is not perfectly controlled",experiments/ep01-bad-ram/kernel_boot_times.json,OBSERVED (confound noted)
+34,b23,"memmap=nn$ss marks a memory range as reserved; in GRUB the $ needs escaping","'Mark specific memory as reserved.' and 'Some bootloaders may need an escape character before $, like Grub2'",Documentation/admin-guide/kernel-parameters.txt,VERIFIED
+35,b23,"memmap=16K$0x1f4bb8000 would keep those four pages out of use",Follows from claim 34 and the observed range. NOT yet applied or tested on this machine,kernel-parameters.txt; summary.json,ESTIMATED (untested; narration says 'with that on the command line' and does not claim it was done)
+36,b26,"EarlyMemtestBad appears in /proc/meminfo after a test","memtest_report_meminfo() prints 'EarlyMemtestBad'; this machine shows 'EarlyMemtestBad: 1 kB'",mm/memtest.c; /proc/meminfo,VERIFIED + OBSERVED

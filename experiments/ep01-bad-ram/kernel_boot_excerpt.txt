@@ -1,0 +1,76 @@
+Nov 14 17:12:06 laptop kernel: Command line: BOOT_IMAGE=/boot/vmlinuz-7.0.0-43-generic root=UUID=<redacted> ro quiet splash memtest=8
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x0000000000000000-0x000000000009efff]  System RAM
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x000000000009f000-0x00000000000fffff]  device reserved
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x0000000000100000-0x000000006c2c8fff]  System RAM
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x000000006c2c9000-0x000000006cbc8fff]  device reserved
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x000000006cbc9000-0x000000006e9defff]  System RAM
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x000000006e9df000-0x0000000070a7efff]  device reserved
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x0000000070a7f000-0x0000000073a2efff]  ACPI NVS
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x0000000073a2f000-0x0000000073afefff]  ACPI data
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x0000000073aff000-0x0000000073afffff]  System RAM
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x0000000073b00000-0x0000000077ffffff]  device reserved
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [gap 0x0000000078000000-0x0000000078bfffff]
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x0000000078c00000-0x0000000078dfffff]  device reserved
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [gap 0x0000000078e00000-0x00000000795fffff]
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x0000000079600000-0x00000000807fffff]  device reserved
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [gap 0x0000000080800000-0x00000000bfffffff]
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x00000000c0000000-0x00000000cfffffff]  device reserved
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [gap 0x00000000d0000000-0x00000000fe00ffff]
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x00000000fe010000-0x00000000fe010fff]  device reserved
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [gap 0x00000000fe011000-0x00000000fed1ffff]
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x00000000fed20000-0x00000000fed7ffff]  device reserved
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [gap 0x00000000fed80000-0x00000000feffffff]
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x00000000ff000000-0x00000000ffffffff]  device reserved
+Nov 14 17:12:06 laptop kernel: BIOS-e820: [mem 0x0000000100000000-0x000000047f7fffff]  System RAM
+Nov 14 17:12:06 laptop kernel: DMI: Acer Aspire Lite AL15-52/Aspire Lite AL15-52, BIOS 1.07.11iRAC 03/13/2024
+Nov 14 17:12:06 laptop kernel: DMI: Memory slots populated: 1/2
+Nov 14 17:12:06 laptop kernel: early_memtest: # of tests: 8
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bb87f8 - 0x00000001f4bb8800 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bb96a0 - 0x00000001f4bb96a8 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bb97e8 - 0x00000001f4bb97f0 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bb97f8 - 0x00000001f4bb9800 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bb9830 - 0x00000001f4bb9838 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bb98b0 - 0x00000001f4bb98b8 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bb98e0 - 0x00000001f4bb98e8 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bb98f0 - 0x00000001f4bb98f8 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bb99b8 - 0x00000001f4bb99c0 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bba120 - 0x00000001f4bba128 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bba138 - 0x00000001f4bba140 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bba420 - 0x00000001f4bba428 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bba430 - 0x00000001f4bba438 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bba4b8 - 0x00000001f4bba4c0 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbaa70 - 0x00000001f4bbaa78 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbaab0 - 0x00000001f4bbaab8 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbb030 - 0x00000001f4bbb038 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbb0e0 - 0x00000001f4bbb0e8 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbb1b8 - 0x00000001f4bbb1c0 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbb1e8 - 0x00000001f4bbb1f0 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbb1f8 - 0x00000001f4bbb200 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbb468 - 0x00000001f4bbb470 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbb4a0 - 0x00000001f4bbb4a8 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbb4b8 - 0x00000001f4bbb4c0 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbbaa0 - 0x00000001f4bbbaa8 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbbe68 - 0x00000001f4bbbe70 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbbea0 - 0x00000001f4bbbea8 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbbf68 - 0x00000001f4bbbf70 reserved
+Nov 14 17:12:06 laptop kernel:   2222222222222222 bad mem addr 0x00000001f4bbbfe0 - 0x00000001f4bbbfe8 reserved
+Nov 14 17:12:06 laptop kernel:   5555555555555555 bad mem addr 0x00000001f4bb8238 - 0x00000001f4bb8240 reserved
+Nov 14 17:12:06 laptop kernel: PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
+Nov 14 17:12:06 laptop kernel: PM: hibernation: Registered nosave memory: [mem 0x0009f000-0x000fffff]
+Nov 14 17:12:06 laptop kernel: PM: hibernation: Registered nosave memory: [mem 0x670ec000-0x671dffff]
+Nov 14 17:12:06 laptop kernel: PM: hibernation: Registered nosave memory: [mem 0x67211000-0x67211fff]
+Nov 14 17:12:06 laptop kernel: PM: hibernation: Registered nosave memory: [mem 0x6c2c9000-0x6cbc8fff]
+Nov 14 17:12:06 laptop kernel: PM: hibernation: Registered nosave memory: [mem 0x6e9df000-0x73afefff]
+Nov 14 17:12:06 laptop kernel: PM: hibernation: Registered nosave memory: [mem 0x73b00000-0xffffffff]
+Nov 14 17:12:06 laptop kernel: Kernel command line: BOOT_IMAGE=/boot/vmlinuz-7.0.0-43-generic root=UUID=<redacted> ro quiet splash memtest=8
+Nov 14 17:12:06 laptop kernel: Unknown kernel command line parameters "splash", will be passed to user space.
+Nov 14 17:12:06 laptop kernel: Freeing SMP alternatives memory: 56K
+Nov 14 17:12:06 laptop kernel: Memory: 14266140K/16474616K available (23912K kernel code, 4961K rwdata, 16720K rodata, 5316K init, 5824K bss, 2182380K reserved, 0K cma-reserved)
+Nov 14 17:12:06 laptop kernel: x86/mm: Memory block size: 128MB
+Nov 14 17:12:06 laptop kernel: efi: Freeing EFI boot services memory: 98120K
+Nov 14 17:12:06 laptop kernel: Freeing initrd memory: 37608K
+Nov 14 17:12:06 laptop kernel: Freeing unused decrypted memory: 2028K
+Nov 14 17:12:06 laptop kernel: Freeing unused kernel image (initmem) memory: 5316K
+Nov 14 17:12:06 laptop kernel: Freeing unused kernel image (text/rodata gap) memory: 660K
+Nov 14 17:12:06 laptop kernel: Freeing unused kernel image (rodata/data gap) memory: 1712K
+Nov 14 17:12:06 laptop kernel: x86/mm: Checked W+X mappings: passed, no W+X pages found.

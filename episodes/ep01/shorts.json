@@ -1,0 +1,67 @@
+[
+ {
+  "id": "short1_one_bit",
+  "title": "One flipped bit turns PAY 100 into PAY 900",
+  "head": [
+   "One flipped bit",
+   "in your computer's memory"
+  ],
+  "beats": [
+   "b09"
+  ],
+  "sx": 270,
+  "sw": 1380,
+  "tag": "Full video: my laptop has broken RAM, and Linux uses it anyway",
+  "thumb": {
+   "big": [
+    "ONE",
+    "FLIPPED BIT"
+   ],
+   "small": "PAY 100 becomes PAY 900"
+  }
+ },
+ {
+  "id": "short2_linux_rlz",
+  "title": "The message hidden in Linux's memory test",
+  "head": [
+   "Linux tests memory with",
+   "17 bit patterns.",
+   "The last one is a message."
+  ],
+  "beats": [
+   "b13"
+  ],
+  "sx": 320,
+  "sw": 1280,
+  "tag": "Full video: how Linux runs on broken RAM",
+  "thumb": {
+   "big": [
+    "HIDDEN",
+    "MESSAGE"
+   ],
+   "small": "inside Linux's memory test"
+  }
+ },
+ {
+  "id": "short3_bad_cells",
+  "title": "Linux mapped 319 faulty spots in my laptop's memory",
+  "head": [
+   "My laptop's RAM is faulty.",
+   "Linux mapped every bad spot."
+  ],
+  "beats": [
+   "b17",
+   "b20"
+  ],
+  "sx": 320,
+  "sw": 1280,
+  "tag": "Full video: why that fence failed once in 24 boots",
+  "thumb": {
+   "big": [
+    "319",
+    "FAULTS"
+   ],
+   "small": "Linux mapped every one"
+  }
+ }
+]
