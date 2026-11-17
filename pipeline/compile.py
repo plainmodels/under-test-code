@@ -16,7 +16,7 @@ def main(out, eps):
     for i, e in enumerate(eps):
         e = pathlib.Path(e).resolve(); sb = json.loads((e / "storyboard.json").read_text()); tl = json.loads((e / "build/timeline.json").read_text())
         mp4 = e / f"{sb['episode']}.mp4"; srt = e / f"{sb['episode']}.srt"
-        last = i == len(eps) - 1; end_beat = next((k for k, b in enumerate(sb["beats"]) if b["scene"] == "endcard"), None)
+        last = i == len(eps) - 1; end_beat = next((k for k, b in enumerate(sb["beats"]) if b["scene"] == "endcard" or b["scene"].endswith("_endcard")), None)
         cut = tl["total"] if (last or end_beat is None) else tl["beats"][end_beat]["start"] + 0.4
         parts.append((mp4, cut)); chapters.append((t0, sb["title"]))
         if srt.exists():
