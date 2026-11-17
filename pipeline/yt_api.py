@@ -139,6 +139,36 @@ def short(ch, ep_dir, sid, when_str):
     print(sid, vid, when.isoformat())
 
 
+def meta(ch, ep_dir, vid):
+    """For a video uploaded in Studio: set title, description, tags, category, language, schedule and thumbnail
+    (about 100 units; no upload). Captions, disclosures, comments and end screen stay in Studio."""
+    whoami(ch, quiet=True)
+    ep = pathlib.Path(ep_dir).resolve()
+    m = json.loads((ep / "publish/metadata.json").read_text())
+    when = publish_at(m["planned"])
+    if when <= datetime.datetime.now(IST) + datetime.timedelta(minutes=15):
+        sys.exit(f"publish time {when} is too close or past; refusing")
+    api = yt(ch)
+    cur = api.videos().list(part="snippet,status", id=vid).execute()["items"]
+    if not cur or cur[0]["snippet"]["channelId"] != CHANNELS[ch]:
+        sys.exit(f"{vid} is not on channel {ch}")
+    cat = {"Education": "27", "Science & Technology": "28"}.get(m.get("category"), "28" if ch != "contour" else "27")
+    body = {"id": vid,
+            "snippet": {"title": m["title"], "description": (ep / "publish/description.txt").read_text(), "tags": m.get("tags", []),
+                        "categoryId": cat, "defaultLanguage": "en", "defaultAudioLanguage": LANG[ch]},
+            "status": {"privacyStatus": "private", "publishAt": when.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                       "selfDeclaredMadeForKids": False, "embeddable": True, "license": "youtube"}}
+    api.videos().update(part="snippet,status", body=body).execute()
+    rec = {"video_id": vid, "publish_at_ist": when.isoformat(), "uploaded_via": "Studio (founder picked files), metadata via API"}
+    try:
+        api.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(ep / "publish/thumbnail.png"))).execute()
+        rec["thumbnail"] = "set"
+    except Exception as e:
+        rec["thumbnail"] = f"FAILED: {str(e)[:120]}"
+    (ep / "publish/upload.json").write_text(json.dumps(rec, indent=1))
+    print(ep.name, json.dumps(rec))
+
+
 def status(ch, vid):
     r = yt(ch).videos().list(part="status,processingDetails,snippet", id=vid).execute()
     print(json.dumps(r.get("items", [{}])[0].get("status", {}), indent=1))
@@ -149,4 +179,4 @@ if __name__ == "__main__":
     cmd, ch, *rest = sys.argv[1:]
     if ch not in CHANNELS:
         sys.exit(f"unknown channel {ch}")
-    {"auth": auth, "whoami": whoami, "upload": upload, "short": short, "status": status}[cmd](ch, *rest)
+    {"auth": auth, "whoami": whoami, "upload": upload, "short": short, "meta": meta, "status": status}[cmd](ch, *rest)
