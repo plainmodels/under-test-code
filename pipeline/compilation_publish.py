@@ -57,13 +57,15 @@ These are {S['name']} episodes {eps[0].name[2:].lstrip('0')} to {eps[-1].name[2:
       x.fillStyle = S.bg; x.fillRect(0, 0, W, H);
       const load = b => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = 'data:image/png;base64,' + b; });
       const im = await Promise.all(imgs.map(load));
-      const tw = 300, th = 169, gap = 14, cols = 3, x0 = W - cols * tw - (cols - 1) * gap - 30, y0 = 30;
-      im.slice(0, 9).forEach((i, k) => { const cx = x0 + (k % cols) * (tw + gap), cy = y0 + Math.floor(k / cols) * (th + gap);
+      const tw = 296, th = 166, gap = 12, cols = 4, x0 = (W - cols * tw - (cols - 1) * gap) / 2, y0 = 300;
+      im.slice(0, 8).forEach((i, k) => { const cx = x0 + (k % cols) * (tw + gap), cy = y0 + Math.floor(k / cols) * (th + gap);
         x.drawImage(i, cx, cy, tw, th); x.strokeStyle = S.acc; x.lineWidth = 2; x.strokeRect(cx, cy, tw, th); });
       const ff = S.font === 'C059' ? 'C059, serif' : 'Lato, sans-serif';
-      x.fillStyle = S.ink; x.font = '900 64px ' + ff; x.fillText(head[0], 36, 300); x.fillStyle = S.acc; x.fillText(head[1], 36, 380);
-      x.fillStyle = S.ink; x.font = '700 40px ' + ff; x.fillText(mins + ' minutes', 36, 450);
-      x.font = '400 28px ' + ff; x.fillText(S.name, 36, 660);
+      x.font = '900 92px ' + ff; x.fillStyle = S.ink; x.fillText(head[0], x0, 130);
+      const w0 = x.measureText(head[0] + ' ').width; x.fillStyle = S.acc; x.fillText(head[1], x0 + w0, 130);
+      x.fillStyle = S.ink; x.font = '700 44px ' + ff; x.fillText(mins + ' minutes  ·  ' + S.name, x0, 220);
+      const k8 = im.length; if (k8 < 8) { const cx = x0 + 3 * (tw + gap), cy = y0 + th + gap;
+        x.fillStyle = S.acc; x.font = '800 40px ' + ff; x.fillText(k8 + ' episodes', cx + 30, cy + 95); }
       return c.toDataURL('image/png').split(',')[1]; }"""
     with sync_playwright() as pw:
         b = pw.chromium.launch(channel="chrome", headless=True); p = b.new_page(); p.set_content("<html><body></body></html>")
