@@ -169,6 +169,35 @@ def meta(ch, ep_dir, vid):
     print(ep.name, json.dumps(rec))
 
 
+def compmeta(ch, comp_dir, vid):
+    """Compilation uploaded in Studio: metadata.json/description.txt/thumbnail.png sit in comp_dir itself."""
+    whoami(ch, quiet=True)
+    comp = pathlib.Path(comp_dir).resolve()
+    m = json.loads((comp / "metadata.json").read_text())
+    when = publish_at(m["planned"])
+    cat = {"Education": "27"}.get(m.get("category"), "28")
+    api = yt(ch)
+    api.videos().update(part="snippet,status", body={"id": vid,
+        "snippet": {"title": m["title"], "description": (comp / "description.txt").read_text(), "tags": m.get("tags", []), "categoryId": cat,
+                    "defaultLanguage": "en", "defaultAudioLanguage": LANG[ch]},
+        "status": {"privacyStatus": "private", "publishAt": when.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                   "selfDeclaredMadeForKids": False}}).execute()
+    rec = {"video_id": vid, "publish_at_ist": when.isoformat()}
+    try:
+        api.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(comp / "thumbnail.png"))).execute(); rec["thumbnail"] = "set"
+    except Exception as e:
+        rec["thumbnail"] = f"FAILED: {str(e)[:120]}"
+    (comp / "upload.json").write_text(json.dumps(rec, indent=1))
+    print(comp.name, json.dumps(rec))
+
+
+def thumb(ch, ep_dir):
+    """Retry the custom thumbnail for an uploaded episode (after phone verification)."""
+    ep = pathlib.Path(ep_dir).resolve(); rec = json.loads((ep / "publish/upload.json").read_text())
+    yt(ch).thumbnails().set(videoId=rec["video_id"], media_body=MediaFileUpload(str(ep / "publish/thumbnail.png"))).execute()
+    rec["thumbnail"] = "set"; (ep / "publish/upload.json").write_text(json.dumps(rec, indent=1)); print(ep.name, "thumbnail set")
+
+
 def status(ch, vid):
     r = yt(ch).videos().list(part="status,processingDetails,snippet", id=vid).execute()
     print(json.dumps(r.get("items", [{}])[0].get("status", {}), indent=1))
@@ -179,4 +208,4 @@ if __name__ == "__main__":
     cmd, ch, *rest = sys.argv[1:]
     if ch not in CHANNELS:
         sys.exit(f"unknown channel {ch}")
-    {"auth": auth, "whoami": whoami, "upload": upload, "short": short, "meta": meta, "status": status}[cmd](ch, *rest)
+    {"auth": auth, "whoami": whoami, "upload": upload, "short": short, "meta": meta, "compmeta": compmeta, "thumb": thumb, "status": status}[cmd](ch, *rest)
