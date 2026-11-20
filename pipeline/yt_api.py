@@ -12,7 +12,7 @@ wrong channel can never upload. OAuth client: the existing Desktop client in ~/D
 (founder approved its use, 2026-11-17). Tokens: ~/project-zero/.secrets/token-<channel>.json (git-ignored).
 The API cannot set comment moderation, ads or end screens: do those in Studio after upload.
 """
-import datetime, json, pathlib, re, sys
+import datetime, json, os, pathlib, re, sys
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -20,7 +20,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-ROOT = pathlib.Path(".")
+ROOT = pathlib.Path(os.environ.get("PZ_ROOT", "."))
 SECRETS = ROOT / ".secrets"
 CLIENT = pathlib.Path.home() / "Downloads/yt-comment-mcp/client_secret.json"
 SCOPES = ["https://www.googleapis.com/auth/youtube.force-ssl"]
@@ -181,7 +181,7 @@ def compmeta(ch, comp_dir, vid):
         "snippet": {"title": m["title"], "description": (comp / "description.txt").read_text(), "tags": m.get("tags", []), "categoryId": cat,
                     "defaultLanguage": "en", "defaultAudioLanguage": LANG[ch]},
         "status": {"privacyStatus": "private", "publishAt": when.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                   "selfDeclaredMadeForKids": False}}).execute()
+                   "selfDeclaredMadeForKids": False, "embeddable": True, "license": "youtube"}}).execute()
     rec = {"video_id": vid, "publish_at_ist": when.isoformat()}
     try:
         api.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(comp / "thumbnail.png"))).execute(); rec["thumbnail"] = "set"

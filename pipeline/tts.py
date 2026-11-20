@@ -46,10 +46,11 @@ def main(storyboard_path: str, build_dir: str) -> None:
             sf.write(wav, samples, sr)
             tag.write_text(key)
         dur = len(samples) / sr
+        bgap = float(beat.get("gap", gap))  # optional per-beat pause, e.g. to hold a short title card
         timeline.append({"id": beat["id"], "start": round(t, 3), "speech": round(dur, 3),
-                         "dur": round(dur + gap, 3)})
-        chunks += [samples, np.zeros(int(gap * sr), dtype=np.float32)]
-        t += dur + gap
+                         "dur": round(dur + bgap, 3)})
+        chunks += [samples, np.zeros(int(bgap * sr), dtype=np.float32)]
+        t += dur + bgap
 
     tail = float(sb.get("tail", TAIL))
     chunks.append(np.zeros(int(tail * sr), dtype=np.float32))

@@ -68,10 +68,10 @@ const S = {};
 S.title = (t, d, p) => {
   const n = p.title.length, y0 = H / 2 - (n - 1) * 62 - 20;
   p.title.forEach((l, i) => {
-    const a = fadeIn(t, 0.15 + i * 0.5, 0.7);
+    const a = p.fast ? fadeIn(t, 0.05 + i * 0.15, 0.3) : fadeIn(t, 0.15 + i * 0.5, 0.7);
     ctx.globalAlpha = a; text(l, W / 2, y0 + i * 124 + (1 - a) * 24, { px: 92, weight: 700, align: "center", color: i === n - 1 && n > 1 ? C.acc : C.text, glow: i === n - 1 && n > 1 ? 28 : 0 });
   });
-  ctx.globalAlpha = fadeIn(t, 0.4 + n * 0.5, 0.8);
+  ctx.globalAlpha = p.fast ? fadeIn(t, 0.2 + n * 0.15, 0.3) : fadeIn(t, 0.4 + n * 0.5, 0.8);
   if (p.sub) text(p.sub, W / 2, y0 + n * 124 + 10, { px: 34, align: "center", color: C.dim });
   ctx.globalAlpha = 1;
 };

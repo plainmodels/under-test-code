@@ -24,7 +24,7 @@ def short(api, ch, ep, sid, k, vid):
         "snippet": {"title": cfg["title"][:100], "description": desc, "categoryId": "27" if ch == "contour" else "28",
                     "defaultLanguage": "en", "defaultAudioLanguage": Y.LANG[ch]},
         "status": {"privacyStatus": "private", "publishAt": when.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                   "selfDeclaredMadeForKids": False}}).execute()
+                   "selfDeclaredMadeForKids": False, "embeddable": True, "license": "youtube"}}).execute()
     recs[sid] = {"video_id": vid, "publish_at_ist": when.isoformat()}; recp.write_text(json.dumps(recs, indent=1))
     print(ep.name, sid, vid, when.strftime("%a %d %b"), flush=True); return True
 
