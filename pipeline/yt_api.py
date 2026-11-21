@@ -7,7 +7,7 @@
   python yt_api.py short <channel> <ep_dir> <short_id> <publish "YYYY-MM-DD HH:MM" IST>
   python yt_api.py status <channel> <video_id>
 
-Channels: earth, contour, undertest. Expected channel ids are checked before every write, so a token for the
+Channels: earth, contour, undertest, everylayer, money, wherefell. Expected channel ids are checked before every write, so a token for the
 wrong channel can never upload. OAuth client: the existing Desktop client in ~/Downloads/yt-comment-mcp
 (founder approved its use, 2026-11-17). Tokens: ~/project-zero/.secrets/token-<channel>.json (git-ignored).
 The API cannot set comment moderation, ads or end screens: do those in Studio after upload.
@@ -24,8 +24,9 @@ ROOT = pathlib.Path(os.environ.get("PZ_ROOT", "."))
 SECRETS = ROOT / ".secrets"
 CLIENT = pathlib.Path.home() / "Downloads/yt-comment-mcp/client_secret.json"
 SCOPES = ["https://www.googleapis.com/auth/youtube.force-ssl"]
-CHANNELS = {"earth": "UCPW7uJFfPq5u6H08L2aANhg", "contour": "UCIgyRf19EnKChpMsSnLmc5Q", "undertest": "UCB6zIe3-QDAwPsak457gy6g"}
-LANG = {"earth": "en-US", "contour": "en-GB", "undertest": "en-US"}
+CHANNELS = {"earth": "UCPW7uJFfPq5u6H08L2aANhg", "contour": "UCIgyRf19EnKChpMsSnLmc5Q", "undertest": "UCB6zIe3-QDAwPsak457gy6g",
+            "everylayer": "UC4q4DCN9UtZt9iE0NQ9Aeiw", "money": "UClRx2prBxPoO-NnnZw-ufSQ", "wherefell": "UCt1cRlzXrZ-1IwB6ajoxquQ"}
+LANG = {"earth": "en-US", "contour": "en-GB", "undertest": "en-US", "everylayer": "en-US", "money": "en-GB", "wherefell": "en-US"}
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
 
 
@@ -139,6 +140,20 @@ def short(ch, ep_dir, sid, when_str):
     print(sid, vid, when.isoformat())
 
 
+
+def captions(api, ch, vid, srt):
+    """Upload an .srt as the published English track (about 400 units). Returns a short status string."""
+    srt = pathlib.Path(srt)
+    if not srt.exists():
+        return "no srt"
+    try:
+        api.captions().insert(part="snippet", body={"snippet": {"videoId": vid, "language": LANG[ch], "name": "", "isDraft": False}},
+                              media_body=MediaFileUpload(str(srt), mimetype="application/octet-stream")).execute()
+        return "uploaded " + srt.name
+    except Exception as e:
+        return f"FAILED: {str(e)[:120]}"
+
+
 def meta(ch, ep_dir, vid):
     """For a video uploaded in Studio: set title, description, tags, category, language, schedule and thumbnail
     (about 100 units; no upload). Captions, disclosures, comments and end screen stay in Studio."""
@@ -152,19 +167,22 @@ def meta(ch, ep_dir, vid):
     cur = api.videos().list(part="snippet,status", id=vid).execute()["items"]
     if not cur or cur[0]["snippet"]["channelId"] != CHANNELS[ch]:
         sys.exit(f"{vid} is not on channel {ch}")
-    cat = {"Education": "27", "Science & Technology": "28"}.get(m.get("category"), "28" if ch != "contour" else "27")
+    cat = {"Education": "27", "Science & Technology": "28"}.get(m.get("category"), "27" if ch in ("contour", "money") else "28")
     body = {"id": vid,
             "snippet": {"title": m["title"], "description": (ep / "publish/description.txt").read_text(), "tags": m.get("tags", []),
                         "categoryId": cat, "defaultLanguage": "en", "defaultAudioLanguage": LANG[ch]},
             "status": {"privacyStatus": "private", "publishAt": when.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                       "selfDeclaredMadeForKids": False, "embeddable": True, "license": "youtube"}}
-    api.videos().update(part="snippet,status", body=body).execute()
+                       "selfDeclaredMadeForKids": False, "embeddable": True, "license": "youtube", "containsSyntheticMedia": False},
+            "paidProductPlacementDetails": {"hasPaidProductPlacement": False}}
+    api.videos().update(part="snippet,status,paidProductPlacementDetails", body=body).execute()
     rec = {"video_id": vid, "publish_at_ist": when.isoformat(), "uploaded_via": "Studio (founder picked files), metadata via API"}
     try:
         api.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(ep / "publish/thumbnail.png"))).execute()
         rec["thumbnail"] = "set"
     except Exception as e:
         rec["thumbnail"] = f"FAILED: {str(e)[:120]}"
+    srts = sorted(ep.glob("*.srt"))
+    rec["captions"] = captions(api, ch, vid, srts[0]) if srts else "no srt"
     (ep / "publish/upload.json").write_text(json.dumps(rec, indent=1))
     print(ep.name, json.dumps(rec))
 
@@ -177,16 +195,18 @@ def compmeta(ch, comp_dir, vid):
     when = publish_at(m["planned"])
     cat = {"Education": "27"}.get(m.get("category"), "28")
     api = yt(ch)
-    api.videos().update(part="snippet,status", body={"id": vid,
+    api.videos().update(part="snippet,status,paidProductPlacementDetails", body={"id": vid,
         "snippet": {"title": m["title"], "description": (comp / "description.txt").read_text(), "tags": m.get("tags", []), "categoryId": cat,
                     "defaultLanguage": "en", "defaultAudioLanguage": LANG[ch]},
         "status": {"privacyStatus": "private", "publishAt": when.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                   "selfDeclaredMadeForKids": False, "embeddable": True, "license": "youtube"}}).execute()
+                   "selfDeclaredMadeForKids": False, "embeddable": True, "license": "youtube", "containsSyntheticMedia": False},
+        "paidProductPlacementDetails": {"hasPaidProductPlacement": False}}).execute()
     rec = {"video_id": vid, "publish_at_ist": when.isoformat()}
     try:
         api.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(comp / "thumbnail.png"))).execute(); rec["thumbnail"] = "set"
     except Exception as e:
         rec["thumbnail"] = f"FAILED: {str(e)[:120]}"
+    rec["captions"] = captions(api, ch, vid, comp / "compilation.srt")
     (comp / "upload.json").write_text(json.dumps(rec, indent=1))
     print(comp.name, json.dumps(rec))
 

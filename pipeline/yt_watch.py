@@ -10,7 +10,7 @@ Costs ~2 units a minute while idle, ~100 per episode, ~51 per Short. Each item i
 import datetime, json, pathlib, re, sys, time
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent)); import yt_api as Y
 
-OFFSETS = {"earth": [2, 4, 6], "contour": [1, 4, 6], "undertest": [2, 4, 6]}
+OFFSETS = {"earth": [2, 4, 6], "contour": [1, 4, 6], "undertest": [2, 4, 6], "everylayer": [2, 4, 6], "money": [2, 4, 6], "wherefell": [2, 4, 6]}
 
 
 def short(api, ch, ep, sid, k, vid):
@@ -20,27 +20,29 @@ def short(api, ch, ep, sid, k, vid):
     main = json.loads((ep / "publish/upload.json").read_text())["video_id"]
     when = Y.publish_at(json.loads((ep / "publish/metadata.json").read_text())["planned"]) + datetime.timedelta(days=OFFSETS[ch][k - 1])
     desc = cfg.get("description", "") + f"\n\nFull video: https://youtu.be/{main}\n\nNarration uses a synthetic voice."
-    api.videos().update(part="snippet,status", body={"id": vid,
-        "snippet": {"title": cfg["title"][:100], "description": desc, "categoryId": "27" if ch == "contour" else "28",
+    api.videos().update(part="snippet,status,paidProductPlacementDetails", body={"id": vid,
+        "snippet": {"title": cfg["title"][:100], "description": desc, "categoryId": "27" if ch in ("contour", "money") else "28",
                     "defaultLanguage": "en", "defaultAudioLanguage": Y.LANG[ch]},
         "status": {"privacyStatus": "private", "publishAt": when.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                   "selfDeclaredMadeForKids": False, "embeddable": True, "license": "youtube"}}).execute()
+                   "selfDeclaredMadeForKids": False, "embeddable": True, "license": "youtube", "containsSyntheticMedia": False},
+        "paidProductPlacementDetails": {"hasPaidProductPlacement": False}}).execute()
     recs[sid] = {"video_id": vid, "publish_at_ist": when.isoformat()}; recp.write_text(json.dumps(recs, indent=1))
     print(ep.name, sid, vid, when.strftime("%a %d %b"), flush=True); return True
 
 
 def main(ch, base, minutes=180):
-    base = pathlib.Path(base); end = time.time() + 60 * float(minutes)
-    while time.time() < end:
+    """minutes=0: one pass and exit (for cron, about 1 unit when idle)."""
+    base = pathlib.Path(base); once = float(minutes) == 0; end = time.time() + 60 * float(minutes)
+    up = "UU" + Y.CHANNELS[ch][2:]   # a channel's uploads playlist
+    while once or time.time() < end:
         try:
             api = Y.yt(ch)
-            up = api.channels().list(part="contentDetails", mine=True).execute()["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
-            for it in api.playlistItems().list(part="snippet", playlistId=up, maxResults=50).execute()["items"]:
+            for it in api.playlistItems().list(part="snippet", playlistId=up, maxResults=25).execute()["items"]:
                 t = re.sub(r"[\s_]+", "_", it["snippet"]["title"].strip()); vid = it["snippet"]["resourceId"]["videoId"]
-                if m := re.fullmatch(r"([ec][cn]\d\d|ep\d\d)", t):
+                if m := re.fullmatch(r"([ec][cn]\d\d|ep\d\d|el\d\d|me\d\d|wf\d\d)", t):
                     ep = base / m[1]
                     if ep.is_dir() and not (ep / "publish/upload.json").exists(): Y.meta(ch, str(ep), vid)
-                elif m := re.fullmatch(r"([ec][cn]\d\d|ep\d\d)_(short(\d)_\w+)", t):
+                elif m := re.fullmatch(r"([ec][cn]\d\d|ep\d\d|el\d\d|me\d\d|wf\d\d)_(short(\d)_\w+)", t):
                     ep = base / m[1]
                     if (ep / "publish/upload.json").exists(): short(api, ch, ep, m[2], int(m[3]), vid)
                 elif m := re.fullmatch(r"(\w+c\d\d)_compilation", t):
@@ -50,6 +52,8 @@ def main(ch, base, minutes=180):
             print("ERR", e, flush=True)
         except Exception as e:
             print("ERR", str(e)[:200], flush=True)
+        if once:
+            return
         time.sleep(45)
     print("watch ended", flush=True)
 
