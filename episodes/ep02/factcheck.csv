@@ -1,0 +1,24 @@
+id,beat,claim,evidence,source,status
+1,b01-b03,"41 ms median with two writes; 0.029 ms with TCP_NODELAY; 16.4 s against 0.014 s for 400 requests; about 1,400 times","results.json: A median 41.005, total 16.376 s; B median 0.029, total 0.014 s; 41.005/0.029 = 1,414",experiments/ep02-nagle/results.json,OBSERVED
+2,b02,8 in 10 requests between 40.82 and 41.21 ms,"results.json: p10 40.82, p90 41.206",experiments/ep02-nagle/results.json,OBSERVED
+3,b06,"Nagle described the problem in 1984: 41-byte packets, one byte of data and 40 of header; '4000% overhead'","RFC 896, 6 January 1984: '41 byte packets (one byte of data, 40 bytes of header)'; 'This 4000% overhead'",https://www.rfc-editor.org/rfc/rfc896.txt (read 2026-11-15),VERIFIED
+4,b06,Nagle was an engineer (the narration's word),RFC 896 header gives Ford Aerospace and Communications Corporation; his 2015 post says he did networking work at Ford Aerospace,RFC 896; news.ycombinator.com/item?id=9050645,VERIFIED (affiliation); 'engineer' is our description
+5,b06,IP header 20 bytes + TCP header 20 bytes (on-screen split),Minimum IPv4 and TCP header sizes without options; the RFC gives only the 40-byte total,"RFC 791, RFC 793 (general knowledge, not re-read today)",NOT RE-READ: split shown on screen only
+6,b07-b08,"The rule: hold new data while earlier data is unacknowledged; unconditional, no timers","RFC 896, quoted on screen word for word",https://www.rfc-editor.org/rfc/rfc896.txt,VERIFIED
+7,b10,A TCP should delay ACKs; the delay must be under 0.5 s,"RFC 1122 4.2.3.2, quoted on screen",https://www.rfc-editor.org/rfc/rfc1122.txt (read 2026-11-15),VERIFIED
+8,b11,"Linux minimum ACK delay is HZ/25; this kernel has HZ = 1000, giving 40 ms",tcp.h: #define TCP_DELACK_MIN ((unsigned)(HZ/25)); /boot/config-7.0.0-43-generic: CONFIG_HZ=1000,torvalds/linux include/net/tcp.h (read 2026-11-14); local kernel config (2026-11-15),VERIFIED + OBSERVED
+9,b13,The client sends header and body as two writes,nagle.py; on screen the two calls are split onto two lines and labelled 'reformatted',experiments/ep02-nagle/nagle.py,OBSERVED
+10,b14-b18a,"Packet sequence of the stall: header, 40.6 ms gap, bare ACK, body 15 us later, reply","tcpdump on loopback, request 2 of variant A: 0, 40579, 40594, 40601, 40664, 40674 us",experiments/ep02-nagle/trace.txt; trace.py,OBSERVED
+11,b18b,Both writes return within microseconds; the wait appears in the read,"strace -T, one request: sendto 0.000183 s, sendto 0.000008 s, recvfrom 0.042185 s. strace itself adds overhead",experiments/ep02-nagle/strace_A.txt,OBSERVED
+12,b20-b22,"Variants B, D, C remove the stall: 0.029, 0.032, 0.019 ms",results.json,experiments/ep02-nagle/results.json,OBSERVED
+13,b21a,With quick ACK on the server the ACK returns after 91 us and the body follows 9 us later,"trace.txt, request 2 of variant D: 0, 91, 100 us",experiments/ep02-nagle/trace.txt,OBSERVED
+14,b22a,One write is one packet; the ACK rides in the reply; 3 packets against 6,"trace.txt, request 2 of variant C: 108-byte packet, 4-byte reply at 77 us, ACK; variant A request: 6 packets",experiments/ep02-nagle/trace.txt,OBSERVED
+15,b23,Result holds on one machine and one kernel only,Not repeated elsewhere; stated in the narration,-,LIMIT STATED
+16,b24,First request of variant A took 0.24 ms; its header was acknowledged at once; cause not established,results.json first_20_ms; trace.txt request 1 of A: ACK after 12 us (a separate run from the 400-request measurement). Narration says the cause is not traced,results.json; trace.txt; tcp(7),OBSERVED; cause UNKNOWN and said so
+17,b25,TCP_QUICKACK is not permanent and not for portable code,"tcp(7), quoted on screen",man 7 tcp on this machine (2026-11-15),VERIFIED
+18,b26,TCP_NODELAY removes the wait but still sends two packets,"trace.txt, request 2 of variant B: 8 bytes at 0, 100 bytes at 17 us",experiments/ep02-nagle/trace.txt,OBSERVED
+19,b26,'the well-known fix',Editorial description; no usage statistic claimed,-,JUDGEMENT
+20,b27,"Nagle wrote in 2015 that send, send, reply causes a delay, and that the real problem is ACK delays","Hacker News comment by user Animats, signed 'John Nagle', 14 Feb 2015; identity confirmed by him in the same thread. One sentence quoted; the second point paraphrased",https://news.ycombinator.com/item?id=9048947 (read 2026-11-15),VERIFIED
+21,b27,'thirty years later',1984 to 2015 = 31 years,-,VERIFIED
+22,b28-b29,"Recommendation: write whole messages, and set TCP_NODELAY as a safety net","Follows from variants B and C; a recommendation, not a measurement",-,JUDGEMENT
+23,b30,The script is about sixty lines of Python,wc -l nagle.py = 68,experiments/ep02-nagle/nagle.py,OBSERVED

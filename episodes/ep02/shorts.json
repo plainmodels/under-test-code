@@ -1,0 +1,75 @@
+[
+ {
+  "id": "short1_41ms",
+  "title": "Same laptop, no network, 41 ms per request. Why?",
+  "head": [
+   "No network. Same laptop.",
+   "41 ms per request."
+  ],
+  "beats": [
+   "b01",
+   "b02",
+   "b03"
+  ],
+  "sx": 110,
+  "sw": 1700,
+  "tag": "Full video: why your fast network call waits 40 milliseconds",
+  "thumb": {
+   "big": [
+    "41 ms",
+    "PER REQUEST"
+   ],
+   "small": "then one line fixed it",
+   "beat": "b03",
+   "at": 0.95
+  }
+ },
+ {
+  "id": "short2_deadlock",
+  "title": "Two polite programs wait 40 ms for each other",
+  "head": [
+   "Client waits for server.",
+   "Server waits for client."
+  ],
+  "beats": [
+   "b17",
+   "b18"
+  ],
+  "sx": 60,
+  "sw": 1800,
+  "tag": "Full video: the 40 millisecond stall hiding in TCP",
+  "thumb": {
+   "big": [
+    "BOTH",
+    "WAITING"
+   ],
+   "small": "40 ms of politeness in TCP",
+   "beat": "b17",
+   "at": 0.95
+  }
+ },
+ {
+  "id": "short3_overhead",
+  "title": "One keystroke, 4000% overhead: the problem Nagle fixed in 1984",
+  "head": [
+   "One keystroke.",
+   "4000% overhead."
+  ],
+  "beats": [
+   "b06",
+   "b07a"
+  ],
+  "sx": 90,
+  "sw": 1740,
+  "tag": "Full video: how that fix costs you 40 milliseconds today",
+  "thumb": {
+   "big": [
+    "4000%",
+    "OVERHEAD"
+   ],
+   "small": "one keystroke, 41 bytes",
+   "beat": "b06",
+   "at": 0.95
+  }
+ }
+]

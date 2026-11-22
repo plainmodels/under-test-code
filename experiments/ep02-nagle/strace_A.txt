@@ -1,0 +1,54 @@
+15261 11:02:23.111075 recvfrom(4 <unfinished ...>
+15260 11:02:23.311277 sendto(5, "HHHHHHHH", 8, 0, NULL, 0) = 8 <0.000167>
+15261 11:02:23.311607 <... recvfrom resumed>, "HHHHHHHH", 108, 0, NULL, NULL) = 8 <0.200469>
+15261 11:02:23.311672 recvfrom(4 <unfinished ...>
+15260 11:02:23.311863 sendto(5, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0, NULL, 0 <unfinished ...>
+15261 11:02:23.311907 <... recvfrom resumed>, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0, NULL, NULL) = 100 <0.000227>
+15260 11:02:23.311921 <... sendto resumed>) = 100 <0.000038>
+15261 11:02:23.311928 sendto(4, "DONE", 4, 0, NULL, 0 <unfinished ...>
+15260 11:02:23.311940 recvfrom(5, "DONE", 4, 0, NULL, NULL) = 4 <0.000020>
+15261 11:02:23.311974 <... sendto resumed>) = 4 <0.000036>
+15261 11:02:23.312030 recvfrom(4 <unfinished ...>
+15260 11:02:23.512473 sendto(5, "HHHHHHHH", 8, 0, NULL, 0) = 8 <0.000163>
+15261 11:02:23.512718 <... recvfrom resumed>, "HHHHHHHH", 108, 0, NULL, NULL) = 8 <0.200683>
+15260 11:02:23.512869 sendto(5, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0, NULL, 0 <unfinished ...>
+15261 11:02:23.512889 recvfrom(4 <unfinished ...>
+15260 11:02:23.512970 <... sendto resumed>) = 100 <0.000081>
+15260 11:02:23.513059 recvfrom(5 <unfinished ...>
+15261 11:02:23.553759 <... recvfrom resumed>, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0, NULL, NULL) = 100 <0.040858>
+15261 11:02:23.553911 sendto(4, "DONE", 4, 0, NULL, 0) = 4 <0.000065>
+15261 11:02:23.554014 recvfrom(4 <unfinished ...>
+15260 11:02:23.554025 <... recvfrom resumed>, "DONE", 4, 0, NULL, NULL) = 4 <0.040952>
+15260 11:02:23.754302 sendto(5, "HHHHHHHH", 8, 0, NULL, 0) = 8 <0.000183>
+15261 11:02:23.754561 <... recvfrom resumed>, "HHHHHHHH", 108, 0, NULL, NULL) = 8 <0.200541>
+15260 11:02:23.754586 sendto(5, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0, NULL, 0) = 100 <0.000008>
+15260 11:02:23.754623 recvfrom(5 <unfinished ...>
+15261 11:02:23.754630 recvfrom(4, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0, NULL, NULL) = 100 <0.041913>
+15261 11:02:23.796682 sendto(4, "DONE", 4, 0, NULL, 0 <unfinished ...>
+15260 11:02:23.796816 <... recvfrom resumed>, "DONE", 4, 0, NULL, NULL) = 4 <0.042185>
+15261 11:02:23.796837 <... sendto resumed>) = 4 <0.000126>
+15261 11:02:23.797380 recvfrom(4 <unfinished ...>
+15260 11:02:23.997242 sendto(5, "HHHHHHHH", 8, 0, NULL, 0) = 8 <0.000351>
+15261 11:02:23.997689 <... recvfrom resumed>, "HHHHHHHH", 108, 0, NULL, NULL) = 8 <0.200280>
+15260 11:02:23.997851 sendto(5, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0, NULL, 0 <unfinished ...>
+15261 11:02:23.997916 recvfrom(4 <unfinished ...>
+15260 11:02:23.998056 <... sendto resumed>) = 100 <0.000141>
+15260 11:02:23.998221 recvfrom(5 <unfinished ...>
+15261 11:02:24.038731 <... recvfrom resumed>, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0, NULL, NULL) = 100 <0.040801>
+15261 11:02:24.038885 sendto(4, "DONE", 4, 0, NULL, 0 <unfinished ...>
+15260 11:02:24.039009 <... recvfrom resumed>, "DONE", 4, 0, NULL, NULL) = 4 <0.040772>
+15261 11:02:24.039031 <... sendto resumed>) = 4 <0.000126>
+15261 11:02:24.039621 recvfrom(4 <unfinished ...>
+15260 11:02:24.239328 sendto(5, "HHHHHHHH", 8, 0, NULL, 0) = 8 <0.000163>
+15261 11:02:24.239569 <... recvfrom resumed>, "HHHHHHHH", 108, 0, NULL, NULL) = 8 <0.199909>
+15260 11:02:24.239653 sendto(5, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0, NULL, 0 <unfinished ...>
+15261 11:02:24.239675 recvfrom(4 <unfinished ...>
+15260 11:02:24.239751 <... sendto resumed>) = 100 <0.000076>
+15260 11:02:24.239840 recvfrom(5 <unfinished ...>
+15261 11:02:24.280660 <... recvfrom resumed>, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0, NULL, NULL) = 100 <0.040973>
+15261 11:02:24.280868 sendto(4, "DONE", 4, 0, NULL, 0 <unfinished ...>
+15260 11:02:24.281232 <... recvfrom resumed>, "DONE", 4, 0, NULL, NULL) = 4 <0.041376>
+15261 11:02:24.281267 <... sendto resumed>) = 4 <0.000367>
+15261 11:02:24.281758 recvfrom(4, "", 108, 0, NULL, NULL) = 0 <0.000644>
+15261 11:02:24.283835 +++ exited with 0 +++
+15260 11:02:24.289353 +++ exited with 0 +++
