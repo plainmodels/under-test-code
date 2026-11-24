@@ -31,17 +31,44 @@ def main(storyboard_path: str, build_dir: str) -> None:
     timeline, chunks, t = [], [np.zeros(int(LEAD_IN * sr), dtype=np.float32)], LEAD_IN
     started = time.time()
 
+    engine = sb.get("engine", "kokoro")
+    if engine == "gemini":
+        # free tier allows ~10 requests a day, so send several beats per request and cut the take at the pauses
+        import gemini_say
+        def ckey(b): return hashlib.sha256(f"{engine}|{sb['voice']}|{sb['speed']}|{sb['lang']}|{b.get('say') or b['text']}".encode()).hexdigest()[:16]
+        todo = [b for b in sb["beats"] if not ((audio / f"{b['id']}.wav").exists() and (audio / f"{b['id']}.key").exists() and (audio / f"{b['id']}.key").read_text() == ckey(b))]
+        groups, cur, n = [], [], 0
+        for b in todo:
+            L = len(b.get("say") or b["text"])
+            if cur and (n + L > 1500 or len(cur) >= 5): groups.append(cur); cur, n = [], 0
+            cur.append(b); n += L
+        if cur: groups.append(cur)
+        print(f"gemini: {len(todo)} beats to voice in {len(groups)} requests", flush=True)
+        for g in groups:
+            parts, gsr = gemini_say.synth_group([b.get("say") or b["text"] for b in g], voice=sb["voice"])
+            for b, s in zip(g, parts):
+                nz = np.where(np.abs(s) > 0.01)[0]
+                if len(nz): s = s[max(0, nz[0] - int(0.08 * gsr)): nz[-1] + int(0.25 * gsr)]
+                sf.write(audio / f"{b['id']}.wav", s.astype(np.float32), gsr); (audio / f"{b['id']}.key").write_text(ckey(b))
+            print("  done", [b["id"] for b in g], flush=True); time.sleep(3)
     for beat in sb["beats"]:
         say = beat.get("say") or beat["text"]
-        key = hashlib.sha256(f"{sb['voice']}|{sb['speed']}|{sb['lang']}|{say}".encode()).hexdigest()[:16]
+        key = hashlib.sha256(f"{engine}|{sb['voice']}|{sb['speed']}|{sb['lang']}|{say}".encode()).hexdigest()[:16]
         wav = audio / f"{beat['id']}.wav"
         tag = audio / f"{beat['id']}.key"
         if wav.exists() and tag.exists() and tag.read_text() == key:
             samples, sr = sf.read(wav, dtype="float32")
         else:
-            if kokoro is None:
-                kokoro = Kokoro(str(MODELS / "kokoro-v1.0.onnx"), str(MODELS / "voices-v1.0.bin"))
-            samples, sr = kokoro.create(say, voice=sb["voice"], speed=float(sb["speed"]), lang=sb["lang"])
+            if engine == "gemini":       # Gemini TTS (free key): natural Hindi prosody; trim edge silence so the beat gap stays ours
+                import gemini_say
+                samples, sr = gemini_say.synth(say, voice=sb["voice"])
+                nz = np.where(np.abs(samples) > 0.01)[0]
+                if len(nz): samples = samples[max(0, nz[0] - int(0.08 * sr)): nz[-1] + int(0.25 * sr)]
+                time.sleep(2)
+            else:
+                if kokoro is None:
+                    kokoro = Kokoro(str(MODELS / "kokoro-v1.0.onnx"), str(MODELS / "voices-v1.0.bin"))
+                samples, sr = kokoro.create(say, voice=sb["voice"], speed=float(sb["speed"]), lang=sb["lang"])
             samples = np.asarray(samples, dtype=np.float32)
             sf.write(wav, samples, sr)
             tag.write_text(key)
